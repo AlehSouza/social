@@ -13,22 +13,77 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
+import api from "@/services";
+import { toast } from "sonner";
 
 export default function Login() {
-
   const router = useRouter();
 
   const [isLogin, setIsLogin] = React.useState(true);
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
+  const [confirmPassword, setConfirmPassword] = React.useState("");
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (isLogin) {
-      console.log("login", email, password);
-      router.push("/feed");
+      login();
       return;
     }
-    console.log("register", email, password);
+    register();
+  };
+
+  const login = async () => {
+    try {
+      const { data } = await api.post("/session", {
+        email_address: email,
+        password: password,
+      });
+
+      toast("Bem-vindo à plataforma!", {
+        description: "Login realizado com sucesso.",
+        action: {
+          label: "Fechar",
+          onClick: () => console.log("Toast fechado"),
+        },
+        position: "top-right",
+      });
+
+      if (data.token) {
+        localStorage.setItem("userToken", data.token);
+        router.push("/feed");
+      }
+      return data;
+    } catch (err) {
+      console.error(err);
+      toast("Erro ao fazer login", {
+        description: "E-mail ou senha incorretos. Tente novamente.",
+        position: "top-right",
+      });
+    }
+  };
+
+  const register = async () => {
+    try {
+      if (password === confirmPassword) {
+        const body = {
+          user: {
+            email_address: email,
+            password: password,
+            password_confirmation: confirmPassword,
+          },
+        };
+        await api.post("/signup", body);
+
+        toast("Registrado com sucesso!", {
+          description: "Agora faça login para acessar sua conta.",
+          position: "top-right",
+        })
+        
+      }
+    } catch (err) {
+      console.error(err);
+    }
+    setIsLogin(true);
   };
 
   return (
@@ -106,6 +161,14 @@ export default function Login() {
                       id="password"
                       placeholder="Password"
                       onChange={(e) => setPassword(e.target.value)}
+                    />
+                  </div>
+                  <div className="flex flex-col space-y-1.5">
+                    <Label htmlFor="password">Confirmar Senha</Label>
+                    <Input
+                      id="password"
+                      placeholder="Password"
+                      onChange={(e) => setConfirmPassword(e.target.value)}
                     />
                   </div>
                 </div>

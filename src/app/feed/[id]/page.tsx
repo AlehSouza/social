@@ -1,11 +1,14 @@
-'use client';
+"use client";
 
-import React from "react";
-import Post from "@/components/Post/post";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { Post as PostType } from "./../../../components/Post/types";
+import Post from "@/components/Post/post";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
-export default function Feed() {
+export default function PostPage({ params }: { params: { postId: string } }) {
   const posts = [
     {
       id: "a3f6e2b8-1c14-4e21-8b8b-920f31e2b0c1",
@@ -250,12 +253,53 @@ export default function Feed() {
       updated_at: "2025-04-04T08:00:00Z",
     },
   ];
-  
+
+  const { id } = useParams();
+  const router = useRouter();
+  const [post, setPost] = useState<PostType>();
+
+  useEffect(() => {
+    const foundPost = posts.find((p) => p.id === id);
+    setPost(foundPost);
+  }, []);
+
   return (
     <div className="flex w-full flex-col gap-4">
-      {posts.map((post, index) => {
-        return <Post {...post} key={index} />;
-      })}
+      <Button className="cursor-pointer" onClick={() => router.back()}>
+        Voltar
+      </Button>
+      {post && <Post {...post} />}
+      {post && post.comments.length > 0 && (
+        <div className="flex flex-col gap-4">
+          {/* #TODO EXTERNALIZAR NUM COMPONENTE DE COMENTÁRIO */}
+          {post.comments.map((comment) => (
+            <Card key={comment.id} className="rounded-2xl shadow-sm p-0">
+              <CardContent className="p-4 flex gap-4 items-start">
+                <Avatar>
+                  <AvatarImage
+                    src={comment.author.profile_picture}
+                    alt={comment.author.name}
+                  />
+                  <AvatarFallback>
+                    {comment.author.name
+                      .split(" ")
+                      .map((n) => n[0])
+                      .join("")
+                      .slice(0, 2)
+                      .toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <p className="font-semibold text-sm">{comment.author.name}</p>
+                  <p className="text-muted-foreground text-sm">
+                    {comment.content}
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

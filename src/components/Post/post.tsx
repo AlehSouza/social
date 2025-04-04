@@ -1,47 +1,26 @@
+"use client";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Heart, MessageCircle, Share2 } from "lucide-react";
-
-type User = {
-  id: number | string;
-  name: string;
-  profile_picture: string;
-};
-
-type Comment = {
-  id: string;
-  content: string;
-  author: User;
-};
-
-type Like = {
-  id: string;
-  author: User;
-};
-
-type Share = {
-  id: string;
-  author: User;
-};
-
-type Post = {
-  id: string;
-  content: string;
-  attachment: string;
-  author: User;
-  comments: Comment[];
-  likes: Like[];
-  shared: Share[];
-  created_at: string;
-  updated_at: string;
-};
+import { useRouter } from "next/navigation";
+import { Post } from "./types";
 
 export default function Post(data: Post) {
+  const router = useRouter();
+
+  const navigateTo = (id: string) => {
+    router.push(`/feed/${id}`);
+  };
+
   return (
-    <Card className="w-full max-w-xl shadow-md p-4 gap-4">
+    <Card
+      className=" cursor-pointer w-full p-4 gap-4"
+      onClick={() => navigateTo(data.id)}
+    >
       <CardHeader className="flex flex-row items-center gap-4">
-        <Avatar>
+        <Avatar className="size-10">
           <AvatarImage
             src={data.author.profile_picture}
             alt={data.author.name}
@@ -52,7 +31,7 @@ export default function Post(data: Post) {
           <CardTitle className="text-lg font-semibold">
             {data.author.name}
           </CardTitle>
-          <p className="text-sm text-gray-500">
+          <p className="text-xs text-gray-500">
             {new Date(data.created_at).toLocaleString()}
           </p>
         </div>
