@@ -5,10 +5,12 @@ import { useEffect, useState } from "react";
 import { Post as PostType } from "./../../../components/Post/types";
 import Post from "@/components/Post/post";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 export default function PostPage({ params }: { params: { postId: string } }) {
+  console.log(params);
+
   const posts = [
     {
       id: "a3f6e2b8-1c14-4e21-8b8b-920f31e2b0c1",

@@ -1,9 +1,7 @@
-'use client';
+"use client";
 
 import React from "react";
 import Post from "@/components/Post/post";
-import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
 
 export default function Feed() {
   const posts = [
@@ -250,7 +248,7 @@ export default function Feed() {
       updated_at: "2025-04-04T08:00:00Z",
     },
   ];
-  
+
   return (
     <div className="flex w-full flex-col gap-4">
       {posts.map((post, index) => {
